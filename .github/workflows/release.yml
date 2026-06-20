@@ -1,0 +1,12 @@
+name: Release to Zenodo
+on:
+  release:
+    types: [created]
+jobs:
+  zenodo:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    # Zenodo integration via .zenodo.json
+    - name: Notify
+      run: echo 'Release triggered - check Zenodo'
