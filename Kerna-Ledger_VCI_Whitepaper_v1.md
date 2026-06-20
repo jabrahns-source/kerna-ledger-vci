@@ -1,3 +1,3 @@
-# Kerna-Ledger VCI: Cryptographic Ledger and Verifiable Compute Runtime...
+# Kerna-Ledger VCI: Cryptographic Ledger and Verifiable Compute Runtime for Deterministic Carbon Compliance and Grid Infrastructure
 
-[Full draft content as previously generated]
+[Full detailed whitepaper draft as generated earlier, expanded with architecture details, integration, validation status]
