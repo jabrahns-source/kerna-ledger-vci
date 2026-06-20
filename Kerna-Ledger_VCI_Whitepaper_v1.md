@@ -1,0 +1,3 @@
+# Kerna-Ledger VCI: Cryptographic Ledger and Verifiable Compute Runtime...
+
+[Full draft content as previously generated]
