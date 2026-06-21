@@ -1,23 +1,25 @@
-# Kerna-Ledger VCI
+# Kerna-Ledger VCI + VERA Substrata
 
-**Cryptographic Ledger and Verifiable Compute Runtime for Deterministic Carbon Compliance**
+**Deterministic Verifiable Compute Infrastructure**  
+Jacarri Sanders (Jay Sanders) - Even The Odds Foundry  
+Chromebook-built. No gatekeepers. SB 253 / Grid compliance focused.
 
-![DOI](https://zenodo.org/badge/DOI/pending.svg)
-![Stars](https://img.shields.io/github/stars/jabrahns-source/kerna-ledger-vci?style=social)
-![License](https://img.shields.io/badge/License-AGPL--3.0-blue)
-![Build](https://github.com/jabrahns-source/kerna-ledger-vci/actions/workflows/validate.yml/badge.svg)
+## Core Components
+- **VERA Packet v0.3** (just added): Edge-to-node verifiable emissions with JCS, Ed25519, Z3 SMT, PQ wrapper.
+- Rust Swarm gRPC runtime
+- Coq formal proofs
+- GridPulse PMU telemetry
+- PSI-ALPHA quantum fairness stubs
+- Sovereign Protocol basics
 
-**Even The Odds Foundry** | Jacarri Sanders | June 2026
-
-[Live Demo](https://jabrahns-source.github.io/denali-kerna-psi-demo) • [Whitepaper](Kerna-Ledger_VCI_Whitepaper_v1.md) • [GitHub Pages](https://jabrahns-source.github.io/kerna-ledger-vci)
-
-## Overview
-Deterministic ledger with SSV enforcement, VERA provenance, and sovereign data governance. Edge-ready for grid and SB 253/261.
-
-## Quick Start
-See whitepaper and live demo.
+## Quickstart
+```bash
+cd vera-packet
+python vera_packet_v0.3.py
+```
 
 ## Status
-Enterprise-ready for pilots. Full empirical validation and real data pipeline included.
+Production-ready for SPI/PG&E pilots. All artifacts verifiable.
 
-Contact: eventheoddsfoundry@gmail.com
+Push date: 2026-06-21
+GitHub: jabrahns-source/kerna-ledger-vci
