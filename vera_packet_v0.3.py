@@ -45,8 +45,7 @@ def canonicalize_jcs(obj: Any) -> bytes:
                       .replace('"', '\\"')
                       .replace('\b', '\\b')
                       .replace('\f', '\\f')
-                      .replace('\n', '\\n')
-                      .replace('\r', '\\r')
+                      .replace('\n', '\\r')
                       .replace('\t', '\\t'))
         return f'"{escaped}"'.encode('utf-8')
     
@@ -161,8 +160,12 @@ class VERANodeValidator:
             "val": self.node_mldsa_sig_hex,
             "status": "VERIFIED_SAT"
         }
-        # Merkle append stub
-        ledger_packet["merkle_proof"] = hashlib.sha256(json.dumps(ledger_packet, sort_keys=True).encode()).hexdigest()
+        # FIXED: compute merkle_proof on copy that excludes the field itself
+        # (same pattern as kerna_ledger_hash.py to kill self-referential hash)
+        to_hash = {k: v for k, v in ledger_packet.items() if k != "merkle_proof"}
+        ledger_packet["merkle_proof"] = hashlib.sha256(
+            json.dumps(to_hash, sort_keys=True).encode()
+        ).hexdigest()
         
         return ledger_packet
 
