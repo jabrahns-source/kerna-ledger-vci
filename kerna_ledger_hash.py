@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 """
-Kerna-Ledger Hashing — canonical content hash excluding self-referential ledger_hash.
+Kerna-Ledger Hashing — canonical content hash excluding self-referential hash/proof field.
 
-This fixes the pre-image inconsistency: ledger_hash is computed over the packet
-*without* the ledger_hash field itself. node_verification (if present) *is* included
-because it is part of the verifiable content.
-
-Verification always strips ledger_hash before recomputing.
+Single source of truth. Use compute_content_hash(packet, exclude_key="merkle_proof") for VERA packets.
 """
 
 import json
@@ -20,33 +16,32 @@ def _canonical_json(obj: Any) -> str:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
-def compute_ledger_hash(packet: Dict[str, Any]) -> str:
+def compute_content_hash(packet: Dict[str, Any], exclude_key: str = "ledger_hash") -> str:
     """
-    Compute SHA-256 content hash over the packet, *excluding* the 'ledger_hash' field.
+    Compute SHA-256 over packet, deliberately excluding the given key from its own preimage.
 
-    - If 'node_verification' is present, it participates in the hash (it's content).
-    - The hash field itself is deliberately stripped so the stored hash can be
-      independently verified without a circular dependency.
+    Prevents the self-referential hash bug. Content fields (node_verification, sig_*, payload) stay in.
     """
     if not isinstance(packet, dict):
         raise TypeError("packet must be a dict")
 
     to_hash = deepcopy(packet)
-    to_hash.pop("ledger_hash", None)
+    to_hash.pop(exclude_key, None)
 
     canonical = _canonical_json(to_hash)
-    digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
-    return digest
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def compute_ledger_hash(packet: Dict[str, Any]) -> str:
+    return compute_content_hash(packet, exclude_key="ledger_hash")
 
 
 def attach_ledger_hash(packet: Dict[str, Any]) -> Dict[str, Any]:
-    """Attach a fresh correct ledger_hash (overwrites any stale one)."""
     packet["ledger_hash"] = compute_ledger_hash(packet)
     return packet
 
 
 def verify_ledger_hash(packet: Dict[str, Any]) -> bool:
-    """True iff stored ledger_hash matches canonical content hash (excluding itself)."""
     if not isinstance(packet, dict) or "ledger_hash" not in packet:
         return False
     stored = packet["ledger_hash"]
@@ -55,21 +50,27 @@ def verify_ledger_hash(packet: Dict[str, Any]) -> bool:
     return stored == compute_ledger_hash(packet)
 
 
-if __name__ == "__main__":
-    test_packet = {
-        "packet_id": "test-001",
-        "timestamp": "2026-06-21T19:30:00Z",
-        "node_id": "denali-01",
-        "payload": {"emissions_tco2e": 1234.56, "scope": 1},
-        "node_verification": {
-            "sig": "ed25519:abc123...",
-            "pubkey": "ed25519:def456...",
-            "timestamp": "2026-06-21T19:30:01Z"
-        }
-    }
-    attach_ledger_hash(test_packet)
-    print("Verification after attach:", verify_ledger_hash(test_packet))
+def attach_content_hash(packet: Dict[str, Any], exclude_key: str = "ledger_hash") -> Dict[str, Any]:
+    packet[exclude_key] = compute_content_hash(packet, exclude_key=exclude_key)
+    return packet
 
-    tampered = deepcopy(test_packet)
-    tampered["payload"]["emissions_tco2e"] = 9999.99
-    print("Tamper detection:", verify_ledger_hash(tampered))
+
+def verify_content_hash(packet: Dict[str, Any], exclude_key: str = "ledger_hash") -> bool:
+    if not isinstance(packet, dict) or exclude_key not in packet:
+        return False
+    stored = packet[exclude_key]
+    if not isinstance(stored, str) or len(stored) != 64:
+        return False
+    return stored == compute_content_hash(packet, exclude_key=exclude_key)
+
+
+if __name__ == "__main__":
+    # ledger_hash example
+    p1 = {"id": "t1", "payload": {"emissions_scaled": 123456}, "node_verification": {"sig": ".."}}
+    attach_ledger_hash(p1)
+    print("ledger verify:", verify_ledger_hash(p1))
+
+    # merkle_proof example (VERA style)
+    p2 = {"v": 3, "payload": {"emissions_scaled": 10000}, "sig_edge": {"pub": ".."}}
+    attach_content_hash(p2, exclude_key="merkle_proof")
+    print("merkle_proof verify:", verify_content_hash(p2, exclude_key="merkle_proof"))
