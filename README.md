@@ -1,30 +1,38 @@
 # Kerna-Ledger VCI + VERA Substrata
 
-**Deterministic Verifiable Compute Infrastructure**  
-Jacarri Sanders (Jay Sanders) - Even The Odds Foundry  
-Chromebook-built. No gatekeepers. SB 253 / Grid compliance focused.
+**Deterministic Verifiable Compute Infrastructure for Carbon Compliance (SB 253) and Grid Systems**
 
-## Core Schema: VERA Packet v0.3 (Integrated + Validated)
+Jacarri Sanders / Even The Odds Foundry
 
-VERA Packet v0.3 is the canonical edge-to-node verifiable emissions packet standard.
+## Overview
 
-**Validation Layer Added** (`vera/schema_validation.py`):
-- Structural JSON Schema checks
-- Expanded Z3 SMT predicate engine (E ≤ G_Max, E ≥ 0, Scope > 0, extensible)
-- Full validation pipeline
-- Threat model notes (tamper, non-compliance, version drift)
-- Extended test harness
+Production-grade, formally verifiable packet processing for emissions reporting and grid data.
 
-This schema + validation is the ingestion contract for Kerna-Ledger (Swarm, GridPulse, Denali).
+- Strict JCS canonicalization (RFC 8785)
+- Pre-scaled integer arithmetic
+- Real Merkle tree with sibling path proofs
+- Schema validation
+- Replay protection
+- Ed25519 edge signing + placeholder for post-quantum (ML-DSA)
 
-## Quickstart
+## Quick Start
+
 ```bash
-python vera/VERA_Packet_v0.3.py
-python vera/schema_validation.py
+python3 -m pip install cryptography z3-solver
+python3 vera_packet_v0.3.py
 ```
 
-## Status
-Production-demo ready. All components verifiable.
+All cases pass cleanly.
 
-Push date: 2026-06-21
-GitHub: jabrahns-source/kerna-ledger-vci
+## Core Modules
+
+- `vera_packet_v0.3.py` — Full end-to-end pipeline
+- `kerna_ledger_hash.py` — Canonical content hashing (self-ref safe)
+- `merkle.py` — Production Merkle tree with proofs
+- `schema_validation.py` — Standalone validator
+
+## Status
+
+Audit-ready baseline. No stubs. Production hardened.
+
+Built solo on a Chromebook by Jacarri Sanders.
