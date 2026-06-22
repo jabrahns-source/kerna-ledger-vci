@@ -1,10 +1,12 @@
 import json
-import hashlib
 import time
 import uuid
 from typing import Dict, Any, Tuple, List
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from z3 import Solver, Int, sat
+
+# Shared canonical hash (prevents self-referential hash bugs)
+from kerna_ledger_hash import attach_content_hash, verify_content_hash
 
 # =====================================================================
 # VERA PACKET v0.3 - JACARRI SANDERS / EVEN THE ODDS FOUNDRY
@@ -160,12 +162,8 @@ class VERANodeValidator:
             "val": self.node_mldsa_sig_hex,
             "status": "VERIFIED_SAT"
         }
-        # FIXED: compute merkle_proof on copy that excludes the field itself
-        # (same pattern as kerna_ledger_hash.py to kill self-referential hash)
-        to_hash = {k: v for k, v in ledger_packet.items() if k != "merkle_proof"}
-        ledger_packet["merkle_proof"] = hashlib.sha256(
-            json.dumps(to_hash, sort_keys=True).encode()
-        ).hexdigest()
+        # Use shared canonical implementation (excludes merkle_proof from its own hash)
+        attach_content_hash(ledger_packet, exclude_key="merkle_proof")
         
         return ledger_packet
 
