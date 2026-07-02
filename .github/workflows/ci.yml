@@ -29,19 +29,23 @@ jobs:
         ls -la
         echo "=== Python version and path ==="
         python --version
-        python -c "import sys, os; print('Python:', sys.version); print('CWD:', os.getcwd()); print('sys.path:', sys.path); print('Files in CWD:'); import glob; print(glob.glob('*'))"
+        python -c "import sys, os; print('Python:', sys.version); print('CWD:', os.getcwd()); print('sys.path:', sys.path)"
     
-    - name: Test critical imports
+    - name: Test critical imports (including z3 for predicates)
       run: |
-        echo "=== Testing imports for VERA Packet v0.3 ==="
+        echo "=== Testing all imports for VERA Packet v0.3 ==="
         python -c "
 import kerna_ledger_hash
-print('SUCCESS: kerna_ledger_hash imported. Has attach_content_hash:', hasattr(kerna_ledger_hash, 'attach_content_hash'))
+print('SUCCESS: kerna_ledger_hash imported')
 import schema_validation
-print('SUCCESS: schema_validation imported. Has validate_ledger_packet:', hasattr(schema_validation, 'validate_ledger_packet'))
+print('SUCCESS: schema_validation imported')
 import merkle
-print('SUCCESS: merkle imported. Has MerkleTree:', hasattr(merkle, 'MerkleTree'))
-print('All core modules import successfully.')
+print('SUCCESS: merkle imported')
+import z3
+print('SUCCESS: z3 imported (version check may vary)')
+from cryptography.hazmat.primitives.asymmetric import ed25519
+print('SUCCESS: cryptography ed25519 OK')
+print('All imports successful — env is healthy for deterministic compliance.')
 "
     
     - name: Run VERA Packet v0.3 production tests
