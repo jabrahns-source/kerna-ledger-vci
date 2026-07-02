@@ -13,6 +13,6 @@ jobs:
       run: | 
         for f in *.json; do jq . "$f" > /dev/null || exit 1; done
     - name: Check links
-      uses: lycheeverse/lychee-action@v1
+      uses: lycheeverse/lychee-action@v2
       with:
         target: README.md *.md
