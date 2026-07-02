@@ -11,15 +11,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+    
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install cryptography z3-solver
-    - name: Run VERA Packet tests
+    
+    - name: Debug environment and files
+      run: |
+        echo "=== Workspace contents ==="
+        ls -la
+        echo "=== Python version and path ==="
+        python --version
+        python -c "import sys, os; print('Python:', sys.version); print('CWD:', os.getcwd()); print('sys.path:', sys.path); print('Files in CWD:'); import glob; print(glob.glob('*'))"
+    
+    - name: Test critical imports
+      run: |
+        echo "=== Testing imports for VERA Packet v0.3 ==="
+        python -c "
+import kerna_ledger_hash
+print('SUCCESS: kerna_ledger_hash imported. Has attach_content_hash:', hasattr(kerna_ledger_hash, 'attach_content_hash'))
+import schema_validation
+print('SUCCESS: schema_validation imported. Has validate_ledger_packet:', hasattr(schema_validation, 'validate_ledger_packet'))
+import merkle
+print('SUCCESS: merkle imported. Has MerkleTree:', hasattr(merkle, 'MerkleTree'))
+print('All core modules import successfully.')
+"
+    
+    - name: Run VERA Packet v0.3 production tests
       run: python vera_packet_v0.3.py
+    
     - name: Verify output
       run: echo "VERA v0.3 CI passed successfully"
