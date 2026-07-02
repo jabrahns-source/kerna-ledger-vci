@@ -167,7 +167,7 @@ class VERANodeValidator:
         ledger_packet["sequence"] = self.sequence
         self.sequence += 1
         
-        # Content hash
+        # Content hash (ledger_hash)
         attach_content_hash(ledger_packet, exclude_key="ledger_hash")
         
         # Schema validation
@@ -175,9 +175,7 @@ class VERANodeValidator:
         if not is_valid:
             raise ValueError(f"Schema validation failed: {errors}")
         
-        # Merkle inclusion proof
-        attach_content_hash(ledger_packet, exclude_key="merkle_proof")
-        
+        # Merkle inclusion proof (real sibling path — no dead attach)
         # Add to Merkle tree
         leaf_data = json.dumps(ledger_packet, sort_keys=True)
         self.merkle.add_leaf(leaf_data)
@@ -233,4 +231,4 @@ if __name__ == "__main__":
     
     print("=" * 70)
     print("VERA v0.3 - ALL CASES PASSED. PRODUCTION READY.")
-    print("=" * 70)
+    print("=" * 70)"
