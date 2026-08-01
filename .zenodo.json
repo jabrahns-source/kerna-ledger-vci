@@ -1,1 +1,23 @@
-{"creators": [...], ...}
+{
+  "title": "Kerna-Ledger VCI — Cryptographic ledger and verifiable compute runtime",
+  "description": "Deterministic carbon compliance, grid infrastructure, and self-sovereign data governance. Core of Even The Odds Foundry. Includes Denali gate logic and VERA protocol integration.",
+  "creators": [
+    {
+      "name": "Sanders, Jacarri",
+      "affiliation": "Even The Odds Foundry / Kerna-Ledger"
+    }
+  ],
+  "keywords": [
+    "verifiable compute",
+    "carbon compliance",
+    "SB 253",
+    "CAISO",
+    "Denali",
+    "VERA",
+    "Kerna-Ledger",
+    "deterministic ledger"
+  ],
+  "license": "mit",
+  "upload_type": "software",
+  "access_right": "open"
+}
