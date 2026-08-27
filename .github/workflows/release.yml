@@ -1,12 +1,25 @@
-name: Release to Zenodo
+name: Release
+
 on:
   release:
-    types: [created]
+    types: [published]
+  workflow_dispatch:
+
 jobs:
-  zenodo:
+  package:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    # Zenodo integration via .zenodo.json
-    - name: Notify
-      run: echo 'Release triggered - check Zenodo'
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Syntax-check Python surface
+        run: |
+          python -m py_compile kerna_ledger_hash.py merkle.py schema_validation.py vera_packet_v0.3.py
+          python -m py_compile vera/VERA_Packet_v0.3.py vera/schema_validation.py vera/live_caiso_backtest.py
+      - name: Confirm Zenodo metadata
+        run: |
+          test -f .zenodo.json
+          python -c "import json; json.load(open('.zenodo.json'))"
+      - name: Note
+        run: echo "Upload the GitHub release assets to Zenodo using .zenodo.json. No secrets required for this check."
